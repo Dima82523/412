@@ -1,5 +1,6 @@
 package com.raywenderlich.android.lab1.screens
 
+import android.widget.GridView
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -37,6 +38,45 @@ private val items = listOf(
     Icons.Filled.Build,
     Icons.Filled.ThumbUp,
 )
+@Composable
+fun GridScreen1(){
+    GridView(columnCount = 3)
+    BackButtonHandler {
+        FundamentalsRouter.navigateTo(Screen.Navigation)
+    }
+}
+
+@Composable
+fun GridView(columnCount:Int) { val itemSize= items.size
+    val rowCount = ceil(itemSize.toFloat() / columnCount).toInt()
+    val gridItems = mutableListOf<List<IconResource>>()
+    var position = 0
+
+    for (i in 0 until rowCount){
+        val rowItem = mutableListOf<IconResource>()
+        for (j in 0 until columnCount) {
+            if  (position.inc() <= itemSize){
+                rowItem.add(IconResource(items[position++],true))
+
+
+                val itemsToFill  = columnCount - rowItem.size
+                for (j in 0 until itemsToFill){
+                    rowItem.add(IconResource(Icons.Filled.Delete, false))
+                }
+                gridItems.add(rowItem)
+                LazyColumn(modifier =  Modifier.fillMaxSize()) {
+                    items(gridItems) { items ->
+                        RowItem(items)
+                    }
+                }
+            }
+
+        }
+    }
+}
+
+
+
 @ExperimentalFoundationApi
 @Composable
 fun GridScreen(){
@@ -73,43 +113,12 @@ fun GridIcon(iconResource: IconResource){
 }
 
 @Composable
-fun GridView(columnCount:Int) { val itemSize= items.size
-    val rowCount = ceil(itemSize.toFloat() / columnCount).toInt()
-    val gridItems = mutableListOf<List<IconResource>>()
-    var position = 0
-
-    for (i in 0 until rowCount){
-        val rowItem = mutableListOf<IconResource>()
-        for (j in 0 until columnCount) {
-            if  (position.inc() <= itemSize){
-                rowItem.add(IconResource(items[position++],true))
-
-
-                val itemsToFill  = columnCount - rowItem.size
-                for (j in 0 until itemsToFill){
-                    rowItem.add(IconResource(Icons.Filled.Delete, false))
-                }
-                gridItems.add(rowItem)
-                LazyColumn(modifier =  Modifier.fillMaxSize()) {
-                    items(gridItems) { items ->
-                        RowItem(items)
-                    }
-                }
-            }
-
-        }
-    }
-}
-
-
-@Composable
 fun RowItem(rowItems: List<IconResource>){
     Row {
         for (element in rowItems)
             GridIcon(element)
     }
 }
-
 @Composable
 fun RowScope.GridIcon(iconResource:IconResource) {
     val color = if (iconResource.isVisible)
